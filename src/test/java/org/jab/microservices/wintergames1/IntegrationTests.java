@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -14,17 +15,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IntegrationTests {
 
     @Autowired
-    private MockMvc mvc;
+    private WebTestClient testClient;
 
     @Test
     public void exampleTest() throws Exception {
-        this.mvc.perform(get("/api/version")).andExpect(status().isOk())
-                .andExpect(content().string("true"));
+        testClient.get()
+                .uri("/api/version")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(String.class)
+                .isEqualTo("false");
     }
 
 }
