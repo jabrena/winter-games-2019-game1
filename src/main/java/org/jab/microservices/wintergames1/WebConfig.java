@@ -16,6 +16,11 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class WebConfig {
 
     @Bean
+    MyHandler myHandler() {
+        return new MyHandler();
+    }
+
+    @Bean
     public RouterFunction<ServerResponse> myRoutes (MyHandler myHandler) {
         return RouterFunctions.route(
                 GET("/api/version")
