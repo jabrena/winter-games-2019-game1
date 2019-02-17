@@ -59,22 +59,6 @@ public class MyHandler {
                 });
     }
 
-    public Mono<ServerResponse> getVersion3(ServerRequest request) {
-        log.info("Executing GetVersion2");
-        return request.principal().flatMap((principal) -> {
-            return client.get()
-                    .uri("/v2/info")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .exchange()
-                    .flatMap((ClientResponse mapper) -> {
-                        return ServerResponse.status(mapper.statusCode())
-                                .headers(c -> mapper.headers().asHttpHeaders().forEach((name, value) -> c.put(name, value)))
-                                .body(mapper.bodyToMono(InfoResponse.class), InfoResponse.class);
-                    });
-        });
-    }
-
-
     // This method returns filter function which will log request data
     private static ExchangeFilterFunction logRequest() {
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
@@ -84,9 +68,4 @@ public class MyHandler {
         });
     }
 
-    private static Mono<ServerResponse> fromClientResponse(ClientResponse clientResponse){
-        return ServerResponse.status(clientResponse.statusCode())
-                .headers(headerConsumer -> clientResponse.headers().asHttpHeaders().forEach(headerConsumer::addAll))
-                .body(clientResponse.bodyToMono(String.class), String.class);
-    }
 }
