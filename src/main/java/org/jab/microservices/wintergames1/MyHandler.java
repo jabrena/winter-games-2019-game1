@@ -40,20 +40,23 @@ public class MyHandler {
 
     }
 
+    private static boolean isVersionOK(InfoResponse infoResponse) {
+        return infoResponse.getApiVersion().equals("2.131.0");
+    }
+
+
     public Mono<ServerResponse> getVersion2(ServerRequest serverRequest) {
         log.info("Executing GetVersion2");
-        Mono<InfoResponse> response = getCFInfo();
-        if(response.block().getApiVersion().equals("2.131.0")) {
-            return ServerResponse
-                    .ok()
-                    .contentType(APPLICATION_JSON)
-                    .body(Mono.just(new MyResponse(true)), MyResponse.class);
-        } else {
-            return ServerResponse
-                    .ok()
-                    .contentType(APPLICATION_JSON)
-                    .body(Mono.just(new MyResponse(false)), MyResponse.class);
-        }
+        return getCFInfo()
+                .filter(MyHandler::isVersionOK)
+                .flatMap(infoResponse -> Mono.just(true))
+                .switchIfEmpty(Mono.just(false))
+                .flatMap(versionIsOK -> {
+                    return ServerResponse
+                            .ok()
+                            .contentType(APPLICATION_JSON)
+                            .body(Mono.just(new MyResponse(versionIsOK)), MyResponse.class);
+                });
     }
 
     public Mono<ServerResponse> getVersion3(ServerRequest request) {

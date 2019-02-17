@@ -33,7 +33,7 @@ public class IntegrationTests {
                 .expectStatus()
                 .isOk()
                 .expectBody(MyResponse.class)
-                .isEqualTo(new MyResponse(false));
+                .isEqualTo(new MyResponse(true));
     }
 
     @Test
