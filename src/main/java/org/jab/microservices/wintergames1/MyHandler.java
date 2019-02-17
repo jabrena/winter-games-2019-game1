@@ -31,19 +31,32 @@ public class MyHandler {
                 .body(Mono.just(new MyResponse(true)), MyResponse.class);
     }
 
-    /*
-    public Mono<ServerResponse> getVersion2(ServerRequest serverRequest) {
-        log.info("Executing GetVersion2");
-        return fromClientResponse(client.get()
+    private Mono<InfoResponse> getCFInfo() {
+        return client.get()
                 .uri("/v2/info")
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(ClientResponse.class));
-                //.flatMap(response -> response.toEntity(InfoResponse.class) );
-    }
-    */
+                .bodyToMono(InfoResponse.class);
 
-    public Mono<ServerResponse> getVersion2(ServerRequest request) {
+    }
+
+    public Mono<ServerResponse> getVersion2(ServerRequest serverRequest) {
+        log.info("Executing GetVersion2");
+        Mono<InfoResponse> response = getCFInfo();
+        if(response.block().getApiVersion().equals("2.131.0")) {
+            return ServerResponse
+                    .ok()
+                    .contentType(APPLICATION_JSON)
+                    .body(Mono.just(new MyResponse(true)), MyResponse.class);
+        } else {
+            return ServerResponse
+                    .ok()
+                    .contentType(APPLICATION_JSON)
+                    .body(Mono.just(new MyResponse(false)), MyResponse.class);
+        }
+    }
+
+    public Mono<ServerResponse> getVersion3(ServerRequest request) {
         log.info("Executing GetVersion2");
         return request.principal().flatMap((principal) -> {
             return client.get()
