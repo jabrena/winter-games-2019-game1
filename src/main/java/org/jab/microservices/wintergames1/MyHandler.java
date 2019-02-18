@@ -19,6 +19,8 @@ public class MyHandler {
     private final WebClient client = WebClient
             .builder()
             .baseUrl("https://api.run.pivotal.io")
+            //TODO move dynamic configuration
+            //.baseUrl("http://localhost:8081")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .filter(logRequest())
             .build();
