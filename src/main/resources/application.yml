@@ -1,3 +1,10 @@
 logging.level.root: INFO
 logging.level.org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
 spring.http.log-request-details: true
+
+endpoint1:
+  host: "https://api.run.pivotal.io"
+  conntimeout: 1000
+  readtimeout: 1000
+  writetimeout: 1000
+

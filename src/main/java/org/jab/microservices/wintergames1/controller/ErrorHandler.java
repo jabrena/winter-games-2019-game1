@@ -1,4 +1,4 @@
-package org.jab.microservices.wintergames1;
+package org.jab.microservices.wintergames1.controller;
 
 import org.jab.microservices.wintergames1.model.ErrorResponse;
 import org.springframework.http.HttpStatus;

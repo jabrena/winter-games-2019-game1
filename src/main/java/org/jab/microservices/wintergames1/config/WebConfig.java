@@ -1,5 +1,9 @@
-package org.jab.microservices.wintergames1;
+package org.jab.microservices.wintergames1.config;
 
+import org.jab.microservices.wintergames1.controller.ErrorHandler;
+import org.jab.microservices.wintergames1.controller.MyHandler;
+import org.jab.microservices.wintergames1.controller.MyRouter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -11,8 +15,14 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class WebConfig {
 
     @Bean
-    MyHandler myHandler() {
-        return new MyHandler();
+    @ConfigurationProperties(prefix = "endpoint1")
+    GlobalConfiguration config(){
+        return new GlobalConfiguration();
+    }
+
+    @Bean
+    MyHandler myHandler (GlobalConfiguration config) {
+        return new MyHandler(config);
     }
 
     @Bean
