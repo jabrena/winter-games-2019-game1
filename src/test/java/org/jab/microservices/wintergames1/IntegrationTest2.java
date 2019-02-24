@@ -1,6 +1,6 @@
 package org.jab.microservices.wintergames1;
 
-import org.jab.microservices.wintergames1.controller.MyResponse;
+import org.jab.microservices.wintergames1.model.MyResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,13 +26,31 @@ public class IntegrationTest2 {
     @BeforeEach
     public void setupWireMock() throws Exception {
 
-        final String tournamentJson = getResourceAsString("myfile.json");
+        final String pcfRespponse = getResourceAsString("pcf_info_response.json");
         stubFor(get(urlEqualTo("/v2/info"))
-                .willReturn(okJson(tournamentJson)));
+                .willReturn(okJson(pcfRespponse)));
+        /*
+        final String bluemixResponse = getResourceAsString("bluemix_info_response.json");
+        stubFor(get(urlEqualTo("/v2/info"))
+                .willReturn(okJson(bluemixResponse)));
+        */
     }
 
     @Test
     public void exampleTest() throws Exception {
+
+        testClient.get()
+                .uri("/api/version")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody(MyResponse.class)
+                .isEqualTo(new MyResponse(true));
+    }
+
+
+    @Test
+    public void exampleTest2() throws Exception {
 
         testClient.get()
                 .uri("/api/version2")
@@ -42,5 +60,4 @@ public class IntegrationTest2 {
                 .expectBody(MyResponse.class)
                 .isEqualTo(new MyResponse(false));
     }
-
 }

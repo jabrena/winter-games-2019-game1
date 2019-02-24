@@ -15,7 +15,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class WebConfig {
 
     @Bean
-    @ConfigurationProperties(prefix = "endpoint1")
+    @ConfigurationProperties(prefix = "location")
     GlobalConfiguration config(){
         return new GlobalConfiguration();
     }

@@ -1,6 +1,6 @@
 package org.jab.microservices.wintergames1;
 
-import org.jab.microservices.wintergames1.controller.MyResponse;
+import org.jab.microservices.wintergames1.model.MyResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -27,7 +27,7 @@ import java.util.Map;
 "osbapi_version",
 "routing_endpoint"
 })
-public class InfoResponse {
+public class PCFInfoResponse {
 
     @JsonProperty("name")
     private String name;
@@ -249,10 +249,10 @@ public class InfoResponse {
     if (other == this) {
     return true;
     }
-    if ((other instanceof InfoResponse) == false) {
+    if ((other instanceof PCFInfoResponse) == false) {
     return false;
     }
-    InfoResponse rhs = ((InfoResponse) other);
+    PCFInfoResponse rhs = ((PCFInfoResponse) other);
     return new EqualsBuilder().append(apiVersion, rhs.apiVersion).append(appSshHostKeyFingerprint, rhs.appSshHostKeyFingerprint).append(dopplerLoggingEndpoint, rhs.dopplerLoggingEndpoint).append(appSshEndpoint, rhs.appSshEndpoint).append(support, rhs.support).append(build, rhs.build).append(appSshOauthClient, rhs.appSshOauthClient).append(version, rhs.version).append(minCliVersion, rhs.minCliVersion).append(routingEndpoint, rhs.routingEndpoint).append(additionalProperties, rhs.additionalProperties).append(description, rhs.description).append(osbapiVersion, rhs.osbapiVersion).append(minRecommendedCliVersion, rhs.minRecommendedCliVersion).append(name, rhs.name).append(tokenEndpoint, rhs.tokenEndpoint).append(authorizationEndpoint, rhs.authorizationEndpoint).isEquals();
     }
 

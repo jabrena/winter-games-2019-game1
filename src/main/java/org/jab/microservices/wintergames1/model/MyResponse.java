@@ -1,4 +1,4 @@
-package org.jab.microservices.wintergames1.controller;
+package org.jab.microservices.wintergames1.model;
 
 import lombok.*;
 
