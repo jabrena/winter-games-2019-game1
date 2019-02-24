@@ -10,6 +10,7 @@ public class GlobalConfiguration {
     private Integer pcf_readtimeout;
     private Integer pcf_writetimeout;
 
+    //TODO Model better
     private String  bluemix_host;
     private Integer bluemix_conntimeout;
     private Integer bluemix_readtimeout;
