@@ -57,7 +57,7 @@ public class IntegrationTests {
             .isNotFound()
             .expectBody()
             .jsonPath("timestamp").isNotEmpty()
-            .jsonPath("path").isEqualTo("/api/version3")
+            .jsonPath("path").isEqualTo("/api/versionKKK")
             .jsonPath("error").isEqualTo("Not Found")
             .jsonPath("message").isEqualTo("No matching handler");
     }
