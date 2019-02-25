@@ -138,19 +138,27 @@ public class MyHandler {
                 });
     }
 
+    private Mono<Boolean> getBluemixInfo2() {
+        return getBluemixInfo()
+                .filter(MyHandler::isVersionOK2)
+                .flatMap(infoResponse -> Mono.just(true))
+                .switchIfEmpty(Mono.just(false));
+    }
 
+    private Mono<Boolean> getPCFInfo2() {
+        return getPCFInfo()
+                .filter(MyHandler::isVersionOK)
+                .flatMap(infoResponse -> Mono.just(true))
+                .switchIfEmpty(Mono.just(false));
+    }
+
+
+    //TODO Move to a service
     public Mono<Boolean> areVersionsOK(){
-        final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo()
-            .filter(MyHandler::isVersionOK2)
-            .flatMap(infoResponse -> Mono.just(true))
-            .switchIfEmpty(Mono.just(false));
+        final Mono<Boolean> isPCFVersionOK = getPCFInfo2();
+        final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo2();
 
-        final Mono<Boolean> isPCFVersionOK = getPCFInfo()
-            .filter(MyHandler::isVersionOK)
-            .flatMap(infoResponse -> Mono.just(true))
-            .switchIfEmpty(Mono.just(false));
-
-        return isBlueMixVersionOK.mergeWith(isPCFVersionOK)
+        return isPCFVersionOK.mergeWith(isBlueMixVersionOK)
             .filter(aBoolean -> {
                 return aBoolean;
             })
@@ -159,6 +167,7 @@ public class MyHandler {
         });
 
     }
+
     public Mono<ServerResponse> getVersion3(ServerRequest serverRequest) {
         return areVersionsOK().flatMap(areOK -> {
             if(areOK) {
