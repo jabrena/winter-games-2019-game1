@@ -22,7 +22,7 @@ Feature: Cloud Foundry Version Control
 ## Checklist
 
 - [x] Call PCF & Bluemix in a sequential way
-- [ ] Call PCF & Bluemix in parallel
+- [x] Call PCF & Bluemix in parallel
 - [ ] Manage 404 Errors
 - [ ] Improve error handling at webclient level
 - [ ] Error handling at functional level
