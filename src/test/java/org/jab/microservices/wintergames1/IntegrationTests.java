@@ -40,14 +40,25 @@ public class IntegrationTests {
     @Test
     public void exampleTest3() throws Exception {
         testClient.get()
-                .uri("/api/version3")
+            .uri("/api/version3")
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody(MyResponse.class)
+            .isEqualTo(new MyResponse(true));
+    }
+
+    @Test
+    public void exampleTestNoOK() throws Exception {
+        testClient.get()
+                .uri("/api/versionKKK")
                 .exchange()
                 .expectStatus()
-                .isNotFound()
-                .expectBody()
-                .jsonPath("timestamp").isNotEmpty()
-                .jsonPath("path").isEqualTo("/api/version3")
-                .jsonPath("error").isEqualTo("Not Found")
-                .jsonPath("message").isEqualTo("No matching handler");
+            .isNotFound()
+            .expectBody()
+            .jsonPath("timestamp").isNotEmpty()
+            .jsonPath("path").isEqualTo("/api/versionKKK")
+            .jsonPath("error").isEqualTo("Not Found")
+            .jsonPath("message").isEqualTo("No matching handler");
     }
 }

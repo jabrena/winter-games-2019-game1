@@ -138,6 +138,43 @@ public class MyHandler {
                 });
     }
 
+
+    public Mono<Boolean> areVersionsOK(){
+        final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo()
+            .filter(MyHandler::isVersionOK2)
+            .flatMap(infoResponse -> Mono.just(true))
+            .switchIfEmpty(Mono.just(false));
+
+        final Mono<Boolean> isPCFVersionOK = getPCFInfo()
+            .filter(MyHandler::isVersionOK)
+            .flatMap(infoResponse -> Mono.just(true))
+            .switchIfEmpty(Mono.just(false));
+
+        return isBlueMixVersionOK.mergeWith(isPCFVersionOK)
+            .filter(aBoolean -> {
+                return aBoolean;
+            })
+            .collectList().map(booleans -> {
+                return booleans.size() == 2;
+        });
+
+    }
+    public Mono<ServerResponse> getVersion3(ServerRequest serverRequest) {
+        return areVersionsOK().flatMap(areOK -> {
+            if(areOK) {
+                return ServerResponse
+                    .ok()
+                    .contentType(APPLICATION_JSON)
+                    .body(Mono.just(new MyResponse(true)), MyResponse.class);
+            } else {
+                return ServerResponse
+                    .ok()
+                    .contentType(APPLICATION_JSON)
+                    .body(Mono.just(new MyResponse(false)), MyResponse.class);
+            }
+        });
+    }
+
     public Mono<ServerResponse> getVersion2(ServerRequest serverRequest) {
         log.info("Executing GetVersion");
         return getPCFInfo()
