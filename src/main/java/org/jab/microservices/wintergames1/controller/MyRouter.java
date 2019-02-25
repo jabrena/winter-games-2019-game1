@@ -13,7 +13,8 @@ public class MyRouter {
     public RouterFunction<ServerResponse> myroutes(MyHandler myHandler, ErrorHandler myErrorHandler) {
 
         return route(GET("/api/version").and(accept(APPLICATION_JSON)), myHandler::getVersion)
-                .andRoute(GET("/api/version2").and(accept(APPLICATION_JSON)), myHandler::getVersion2);
+                .andRoute(GET("/api/version2").and(accept(APPLICATION_JSON)), myHandler::getVersion2)
+                .andRoute(GET("/api/version3").and(accept(APPLICATION_JSON)), myHandler::getVersion3);
                 //.andOther(route(all(), myErrorHandler::notFund));
     }
 }
