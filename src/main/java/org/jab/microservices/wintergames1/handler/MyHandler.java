@@ -26,8 +26,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 public class MyHandler {
 
-    public static final String PCF_LATEST_VERSION = "2.131.0";
-    public static final String BLUEMIX_LATEST_VERSION = "2.106.0";
+    private static String PCF_LATEST_VERSION;
+    private static String BLUEMIX_LATEST_VERSION;
 
     private final WebClient client1;
     private final WebClient client2;
@@ -39,6 +39,8 @@ public class MyHandler {
         final Integer pcf_conntimeout = config.getHosts().get(0).getConntimeout();
         final Integer pcf_readtimeout = config.getHosts().get(0).getReadtimeout();
         final Integer pcf_writetimeout = config.getHosts().get(0).getWritetimeout();
+        PCF_LATEST_VERSION = config.getHosts().get(0).getVersion();
+
         LOGGER.info("Host: {}", pcf_host);
         LOGGER.info("Connection Timeout: {}", pcf_conntimeout);
         LOGGER.info("Read Timeout: {}", pcf_readtimeout);
@@ -48,6 +50,8 @@ public class MyHandler {
         final Integer bluemix_conntimeout = config.getHosts().get(1).getConntimeout();
         final Integer bluemix_readtimeout = config.getHosts().get(1).getReadtimeout();
         final Integer bluemix_writetimeout = config.getHosts().get(1).getWritetimeout();
+        BLUEMIX_LATEST_VERSION = config.getHosts().get(1).getVersion();
+
         LOGGER.info("Host: {}", bluemix_host);
         LOGGER.info("Connection Timeout: {}", bluemix_conntimeout);
         LOGGER.info("Read Timeout: {}", bluemix_readtimeout);

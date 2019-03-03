@@ -9,5 +9,5 @@ public class Host {
     private Integer conntimeout;
     private Integer readtimeout;
     private Integer writetimeout;
-
+    private String  version;
 }
