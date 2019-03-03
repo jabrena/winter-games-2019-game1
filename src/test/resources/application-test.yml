@@ -3,12 +3,15 @@ logging.level.org.springframework.web.reactive.function.client.ExchangeFunctions
 spring.http.log-request-details: true
 
 location:
-  pcf_host: "http://localhost:8081"
-  pcf_conntimeout: 1000
-  pcf_readtimeout: 1000
-  pcf_writetimeout: 1000
-  bluemix_host: "http://localhost:8081"
-  bluemix_conntimeout: 1000
-  bluemix_readtimeout: 1000
-  bluemix_writetimeout: 1000
+  hosts:
+  -
+    address: "http://localhost:8081"
+    conntimeout: 1000
+    readtimeout: 1000
+    writetimeout: 1000
+  -
+    address: "http://localhost:8081"
+    conntimeout: 1000
+    readtimeout: 1000
+    writetimeout: 1000
 

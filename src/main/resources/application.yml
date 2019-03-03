@@ -3,11 +3,14 @@ logging.level.org.springframework.web.reactive.function.client.ExchangeFunctions
 spring.http.log-request-details: true
 
 location:
-  pcf_host: "https://api.run.pivotal.io"
-  pcf_conntimeout: 1000
-  pcf_readtimeout: 1000
-  pcf_writetimeout: 1000
-  bluemix_host: "https://api.ng.bluemix.net"
-  bluemix_conntimeout: 1000
-  bluemix_readtimeout: 1000
-  bluemix_writetimeout: 1000
+  hosts:
+  -
+    address: "https://api.run.pivotal.io"
+    conntimeout: 1000
+    readtimeout: 1000
+    writetimeout: 1000
+  -
+    address: "https://api.ng.bluemix.net"
+    conntimeout: 1000
+    readtimeout: 1000
+    writetimeout: 1000

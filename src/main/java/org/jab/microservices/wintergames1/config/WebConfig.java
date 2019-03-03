@@ -1,8 +1,8 @@
 package org.jab.microservices.wintergames1.config;
 
-import org.jab.microservices.wintergames1.controller.ErrorHandler;
-import org.jab.microservices.wintergames1.controller.MyHandler;
-import org.jab.microservices.wintergames1.controller.MyRouter;
+import org.jab.microservices.wintergames1.handler.ErrorHandler;
+import org.jab.microservices.wintergames1.handler.MyHandler;
+import org.jab.microservices.wintergames1.router.MyRouter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

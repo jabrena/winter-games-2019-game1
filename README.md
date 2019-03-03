@@ -3,7 +3,7 @@
 Implementation of first challenge
 
 ```
-./mvnw mvn clean test jacoco:report surefire-report:report
+./mvnw clean test jacoco:report surefire-report:report
 ```
 
 ## Features

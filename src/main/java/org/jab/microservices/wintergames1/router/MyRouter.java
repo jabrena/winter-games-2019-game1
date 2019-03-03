@@ -1,5 +1,7 @@
-package org.jab.microservices.wintergames1.controller;
+package org.jab.microservices.wintergames1.router;
 
+import org.jab.microservices.wintergames1.handler.ErrorHandler;
+import org.jab.microservices.wintergames1.handler.MyHandler;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -12,9 +14,8 @@ public class MyRouter {
 
     public RouterFunction<ServerResponse> myroutes(MyHandler myHandler, ErrorHandler myErrorHandler) {
 
-        return route(GET("/api/version").and(accept(APPLICATION_JSON)), myHandler::getVersion)
-                .andRoute(GET("/api/version2").and(accept(APPLICATION_JSON)), myHandler::getVersion2)
-                .andRoute(GET("/api/version3").and(accept(APPLICATION_JSON)), myHandler::getVersion3);
+        return route(GET("/api/version").and(accept(APPLICATION_JSON)), myHandler::getVersionParallel)
+                .andRoute(GET("/api/version/sequence").and(accept(APPLICATION_JSON)), myHandler::getVersionSequence);
                 //.andOther(route(all(), myErrorHandler::notFund));
     }
 }
