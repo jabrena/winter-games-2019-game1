@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class Host {
 
+    private CloudFoundryProviders id;
     private String  address;
     private Integer conntimeout;
     private Integer readtimeout;

@@ -4,7 +4,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.jab.microservices.wintergames1.config.CloudFoundryProviders;
 import org.jab.microservices.wintergames1.config.GlobalConfiguration;
+import org.jab.microservices.wintergames1.config.Host;
 import org.jab.microservices.wintergames1.model.BluemixInfoResponse;
 import org.jab.microservices.wintergames1.model.MyCustomClientException;
 import org.jab.microservices.wintergames1.model.MyResponse;
@@ -26,63 +28,45 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @Slf4j
 public class MyHandler {
 
-    private static String PCF_LATEST_VERSION;
-    private static String BLUEMIX_LATEST_VERSION;
+    //TODO Remove this Static Variable
+    private static String PCF_LATEST_VERSION = "2.131.0";
+    private static String BLUEMIX_LATEST_VERSION = "2.106.0";
 
+    private final GlobalConfiguration config;
     private final WebClient client1;
     private final WebClient client2;
 
     public MyHandler(GlobalConfiguration config) {
+        this.config = config;
+        this.client1 = this.initWebClient(CloudFoundryProviders.PFC);
+        this.client2 = this.initWebClient(CloudFoundryProviders.BLUEMIX);
+    }
 
+    private Host getHostByProvider(CloudFoundryProviders provider) {
+        return config.getHosts().stream()
+                .filter(x -> x.getId().equals(provider))
+                .findFirst()
+                .get();
+    }
 
-        final String pcf_host = config.getHosts().get(0).getAddress();
-        final Integer pcf_conntimeout = config.getHosts().get(0).getConntimeout();
-        final Integer pcf_readtimeout = config.getHosts().get(0).getReadtimeout();
-        final Integer pcf_writetimeout = config.getHosts().get(0).getWritetimeout();
-        PCF_LATEST_VERSION = config.getHosts().get(0).getVersion();
+    private WebClient initWebClient(CloudFoundryProviders provider) {
 
-        LOGGER.info("Host: {}", pcf_host);
-        LOGGER.info("Connection Timeout: {}", pcf_conntimeout);
-        LOGGER.info("Read Timeout: {}", pcf_readtimeout);
-        LOGGER.info("Write Timeout: {}", pcf_writetimeout);
+        final Host host = this.getHostByProvider(provider);
 
-        final String bluemix_host = config.getHosts().get(1).getAddress();
-        final Integer bluemix_conntimeout = config.getHosts().get(1).getConntimeout();
-        final Integer bluemix_readtimeout = config.getHosts().get(1).getReadtimeout();
-        final Integer bluemix_writetimeout = config.getHosts().get(1).getWritetimeout();
-        BLUEMIX_LATEST_VERSION = config.getHosts().get(1).getVersion();
-
-        LOGGER.info("Host: {}", bluemix_host);
-        LOGGER.info("Connection Timeout: {}", bluemix_conntimeout);
-        LOGGER.info("Read Timeout: {}", bluemix_readtimeout);
-        LOGGER.info("Write Timeout: {}", bluemix_writetimeout);
+        LOGGER.info("Configuring id: {} with address: {}", host.getId(), host.getAddress());
+        LOGGER.info("Connection timeout: {}, Read timeout: {}, Write timeout: {}", host.getConntimeout(), host.getReadtimeout(), host.getWritetimeout());
 
         final TcpClient tcpClient = TcpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, pcf_conntimeout)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, host.getConntimeout())
                 .noProxy()
                 .doOnConnected(connection -> connection
-                        .addHandlerLast(new ReadTimeoutHandler(pcf_readtimeout))
-                        .addHandlerLast(new WriteTimeoutHandler(pcf_writetimeout)));
+                        .addHandlerLast(new ReadTimeoutHandler(host.getReadtimeout()))
+                        .addHandlerLast(new WriteTimeoutHandler(host.getWritetimeout())));
 
-        this.client1 = WebClient
+        return WebClient
                 .builder()
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
-                .baseUrl(pcf_host)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .filter(logRequest())
-                .build();
-
-        final TcpClient tcpClient2 = TcpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, bluemix_conntimeout)
-                .noProxy()
-                .doOnConnected(connection -> connection
-                        .addHandlerLast(new ReadTimeoutHandler(bluemix_readtimeout))
-                        .addHandlerLast(new WriteTimeoutHandler(bluemix_writetimeout)));
-
-        this.client2 = WebClient
-                .builder()
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient2)))
-                .baseUrl(bluemix_host)
+                .baseUrl(host.getAddress())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .filter(logRequest())
                 .build();
@@ -123,7 +107,7 @@ public class MyHandler {
     }
 
     private static boolean isVersionOK(PCFInfoResponse infoResponse) {
-        LOGGER.info("{} {}", PCF_LATEST_VERSION, infoResponse.getApiVersion());
+        LOGGER.info("{} {}", PCF_LATEST_VERSION , infoResponse.getApiVersion());
         return infoResponse.getApiVersion().equals(PCF_LATEST_VERSION);
     }
 
@@ -149,6 +133,7 @@ public class MyHandler {
         final Mono<Boolean> isPCFVersionOK = getPCFInfo();
         final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo();
 
+        //TODO Simplify this syntax
         return isPCFVersionOK.mergeWith(isBlueMixVersionOK)
             .filter(aBoolean -> {
                 return aBoolean;

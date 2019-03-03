@@ -5,12 +5,14 @@ spring.http.log-request-details: true
 location:
   hosts:
   -
+    id: "PFC"
     address: "http://localhost:8081"
     conntimeout: 1000
     readtimeout: 1000
     writetimeout: 1000
     version: "2.131.0"
   -
+    id: "BLUEMIX"
     address: "http://localhost:8081"
     conntimeout: 1000
     readtimeout: 1000
