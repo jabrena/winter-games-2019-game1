@@ -14,24 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-"name",
-"build",
-"support",
-"version",
-"description",
-"authorization_endpoint",
-"token_endpoint",
-"min_cli_version",
-"min_recommended_cli_version",
-"api_version",
-"app_ssh_endpoint",
-"app_ssh_host_key_fingerprint",
-"app_ssh_oauth_client",
-"doppler_logging_endpoint",
-"bits_endpoint"
-})
-public class BluemixInfoResponse {
+public class BluemixInfoResponse extends CloudFoundryInfoResponse {
 
     @JsonProperty("name")
     private String name;
@@ -51,8 +34,7 @@ public class BluemixInfoResponse {
     private Object minCliVersion;
     @JsonProperty("min_recommended_cli_version")
     private Object minRecommendedCliVersion;
-    @JsonProperty("api_version")
-    private String apiVersion;
+
     @JsonProperty("app_ssh_endpoint")
     private String appSshEndpoint;
     @JsonProperty("app_ssh_host_key_fingerprint")
@@ -156,16 +138,6 @@ public class BluemixInfoResponse {
         this.minRecommendedCliVersion = minRecommendedCliVersion;
     }
 
-    @JsonProperty("api_version")
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    @JsonProperty("api_version")
-    public void setApiVersion(String apiVersion) {
-        this.apiVersion = apiVersion;
-    }
-
     @JsonProperty("app_ssh_endpoint")
     public String getAppSshEndpoint() {
         return appSshEndpoint;
@@ -228,14 +200,13 @@ public class BluemixInfoResponse {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("name", name).append("build", build).append("support", support).append("version", version).append("description", description).append("authorizationEndpoint", authorizationEndpoint).append("tokenEndpoint", tokenEndpoint).append("minCliVersion", minCliVersion).append("minRecommendedCliVersion", minRecommendedCliVersion).append("apiVersion", apiVersion).append("appSshEndpoint", appSshEndpoint).append("appSshHostKeyFingerprint", appSshHostKeyFingerprint).append("appSshOauthClient", appSshOauthClient).append("dopplerLoggingEndpoint", dopplerLoggingEndpoint).append("bitsEndpoint", bitsEndpoint).append("additionalProperties", additionalProperties).toString();
+        return new ToStringBuilder(this).append("name", name).append("build", build).append("support", support).append("version", version).append("description", description).append("authorizationEndpoint", authorizationEndpoint).append("tokenEndpoint", tokenEndpoint).append("minCliVersion", minCliVersion).append("minRecommendedCliVersion", minRecommendedCliVersion).append("appSshEndpoint", appSshEndpoint).append("appSshHostKeyFingerprint", appSshHostKeyFingerprint).append("appSshOauthClient", appSshOauthClient).append("dopplerLoggingEndpoint", dopplerLoggingEndpoint).append("bitsEndpoint", bitsEndpoint).append("additionalProperties", additionalProperties).toString();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(appSshHostKeyFingerprint)
-                .append(apiVersion)
                 .append(dopplerLoggingEndpoint)
                 .append(appSshEndpoint)
                 .append(support)
@@ -265,7 +236,6 @@ public class BluemixInfoResponse {
         BluemixInfoResponse rhs = ((BluemixInfoResponse) other);
         return new EqualsBuilder()
                 .append(appSshHostKeyFingerprint, rhs.appSshHostKeyFingerprint)
-                .append(apiVersion, rhs.apiVersion)
                 .append(dopplerLoggingEndpoint, rhs.dopplerLoggingEndpoint)
                 .append(appSshEndpoint, rhs.appSshEndpoint)
                 .append(support, rhs.support)

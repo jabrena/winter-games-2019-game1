@@ -14,25 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-"name",
-"build",
-"support",
-"version",
-"description",
-"authorization_endpoint",
-"token_endpoint",
-"min_cli_version",
-"min_recommended_cli_version",
-"app_ssh_endpoint",
-"app_ssh_host_key_fingerprint",
-"app_ssh_oauth_client",
-"doppler_logging_endpoint",
-"api_version",
-"osbapi_version",
-"routing_endpoint"
-})
-public class PCFInfoResponse {
+public class PCFInfoResponse extends CloudFoundryInfoResponse {
 
     @JsonProperty("name")
     private String name;
@@ -60,8 +42,7 @@ public class PCFInfoResponse {
     private String appSshOauthClient;
     @JsonProperty("doppler_logging_endpoint")
     private String dopplerLoggingEndpoint;
-    @JsonProperty("api_version")
-    private String apiVersion;
+
     @JsonProperty("osbapi_version")
     private String osbapiVersion;
     @JsonProperty("routing_endpoint")
@@ -199,16 +180,6 @@ public class PCFInfoResponse {
     this.dopplerLoggingEndpoint = dopplerLoggingEndpoint;
     }
 
-    @JsonProperty("api_version")
-    public String getApiVersion() {
-    return apiVersion;
-    }
-
-    @JsonProperty("api_version")
-    public void setApiVersion(String apiVersion) {
-    this.apiVersion = apiVersion;
-    }
-
     @JsonProperty("osbapi_version")
     public String getOsbapiVersion() {
     return osbapiVersion;
@@ -241,12 +212,12 @@ public class PCFInfoResponse {
 
     @Override
     public String toString() {
-    return new ToStringBuilder(this).append("name", name).append("build", build).append("support", support).append("version", version).append("description", description).append("authorizationEndpoint", authorizationEndpoint).append("tokenEndpoint", tokenEndpoint).append("minCliVersion", minCliVersion).append("minRecommendedCliVersion", minRecommendedCliVersion).append("appSshEndpoint", appSshEndpoint).append("appSshHostKeyFingerprint", appSshHostKeyFingerprint).append("appSshOauthClient", appSshOauthClient).append("dopplerLoggingEndpoint", dopplerLoggingEndpoint).append("apiVersion", apiVersion).append("osbapiVersion", osbapiVersion).append("routingEndpoint", routingEndpoint).append("additionalProperties", additionalProperties).toString();
+    return new ToStringBuilder(this).append("name", name).append("build", build).append("support", support).append("version", version).append("description", description).append("authorizationEndpoint", authorizationEndpoint).append("tokenEndpoint", tokenEndpoint).append("minCliVersion", minCliVersion).append("minRecommendedCliVersion", minRecommendedCliVersion).append("appSshEndpoint", appSshEndpoint).append("appSshHostKeyFingerprint", appSshHostKeyFingerprint).append("appSshOauthClient", appSshOauthClient).append("dopplerLoggingEndpoint", dopplerLoggingEndpoint).append("osbapiVersion", osbapiVersion).append("routingEndpoint", routingEndpoint).append("additionalProperties", additionalProperties).toString();
     }
 
     @Override
     public int hashCode() {
-    return new HashCodeBuilder().append(apiVersion).append(appSshHostKeyFingerprint).append(dopplerLoggingEndpoint).append(appSshEndpoint).append(support).append(build).append(appSshOauthClient).append(version).append(minCliVersion).append(routingEndpoint).append(additionalProperties).append(description).append(osbapiVersion).append(minRecommendedCliVersion).append(name).append(tokenEndpoint).append(authorizationEndpoint).toHashCode();
+    return new HashCodeBuilder().append(appSshHostKeyFingerprint).append(dopplerLoggingEndpoint).append(appSshEndpoint).append(support).append(build).append(appSshOauthClient).append(version).append(minCliVersion).append(routingEndpoint).append(additionalProperties).append(description).append(osbapiVersion).append(minRecommendedCliVersion).append(name).append(tokenEndpoint).append(authorizationEndpoint).toHashCode();
     }
 
     @Override
@@ -258,7 +229,7 @@ public class PCFInfoResponse {
     return false;
     }
     PCFInfoResponse rhs = ((PCFInfoResponse) other);
-    return new EqualsBuilder().append(apiVersion, rhs.apiVersion).append(appSshHostKeyFingerprint, rhs.appSshHostKeyFingerprint).append(dopplerLoggingEndpoint, rhs.dopplerLoggingEndpoint).append(appSshEndpoint, rhs.appSshEndpoint).append(support, rhs.support).append(build, rhs.build).append(appSshOauthClient, rhs.appSshOauthClient).append(version, rhs.version).append(minCliVersion, rhs.minCliVersion).append(routingEndpoint, rhs.routingEndpoint).append(additionalProperties, rhs.additionalProperties).append(description, rhs.description).append(osbapiVersion, rhs.osbapiVersion).append(minRecommendedCliVersion, rhs.minRecommendedCliVersion).append(name, rhs.name).append(tokenEndpoint, rhs.tokenEndpoint).append(authorizationEndpoint, rhs.authorizationEndpoint).isEquals();
+    return new EqualsBuilder().append(appSshHostKeyFingerprint, rhs.appSshHostKeyFingerprint).append(dopplerLoggingEndpoint, rhs.dopplerLoggingEndpoint).append(appSshEndpoint, rhs.appSshEndpoint).append(support, rhs.support).append(build, rhs.build).append(appSshOauthClient, rhs.appSshOauthClient).append(version, rhs.version).append(minCliVersion, rhs.minCliVersion).append(routingEndpoint, rhs.routingEndpoint).append(additionalProperties, rhs.additionalProperties).append(description, rhs.description).append(osbapiVersion, rhs.osbapiVersion).append(minRecommendedCliVersion, rhs.minRecommendedCliVersion).append(name, rhs.name).append(tokenEndpoint, rhs.tokenEndpoint).append(authorizationEndpoint, rhs.authorizationEndpoint).isEquals();
     }
 
 }

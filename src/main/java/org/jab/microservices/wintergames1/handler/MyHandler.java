@@ -7,10 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jab.microservices.wintergames1.config.CloudFoundryProviders;
 import org.jab.microservices.wintergames1.config.GlobalConfiguration;
 import org.jab.microservices.wintergames1.config.Host;
-import org.jab.microservices.wintergames1.model.BluemixInfoResponse;
+import org.jab.microservices.wintergames1.model.CloudFoundryInfoResponse;
 import org.jab.microservices.wintergames1.model.MyCustomClientException;
 import org.jab.microservices.wintergames1.model.MyResponse;
-import org.jab.microservices.wintergames1.model.PCFInfoResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -70,46 +69,33 @@ public class MyHandler {
                 .build();
     }
 
+    private Mono<Boolean> makeCall(WebClient client, CloudFoundryProviders providers) {
+
+        Predicate<CloudFoundryInfoResponse> versionOK = (response) ->
+                response.getApiVersion().equals(getHostByProvider(providers).getVersion());
+
+        return client.get()
+                .uri("/v2/info")
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse ->
+                        Mono.error(new MyCustomClientException())
+                )
+                .onStatus(HttpStatus::is5xxServerError, clientResponse ->
+                        Mono.error(new MyCustomClientException())
+                )
+                .bodyToMono(CloudFoundryInfoResponse.class)
+                .filter(versionOK)
+                .flatMap(infoResponse -> Mono.just(true))
+                .switchIfEmpty(Mono.just(false));
+    }
+
     private Mono<Boolean> getPCFInfo() {
-
-        Predicate<PCFInfoResponse> versionOK = (i) ->
-                i.getApiVersion().equals(getHostByProvider(CloudFoundryProviders.PFC).getVersion());
-
-        return client1.get()
-            .uri("/v2/info")
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                    Mono.error(new MyCustomClientException())
-            )
-            .onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                    Mono.error(new MyCustomClientException())
-            )
-            .bodyToMono(PCFInfoResponse.class)
-            .filter(versionOK)
-            .flatMap(infoResponse -> Mono.just(true))
-            .switchIfEmpty(Mono.just(false));
+        return makeCall(client1, CloudFoundryProviders.PFC);
     }
 
     private Mono<Boolean> getBluemixInfo() {
-
-        Predicate<BluemixInfoResponse> versionOK = (i) ->
-                i.getApiVersion().equals(getHostByProvider(CloudFoundryProviders.BLUEMIX).getVersion());
-
-        return client2.get()
-            .uri("/v2/info")
-            .accept(MediaType.APPLICATION_JSON)
-            .retrieve()
-            .onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                    Mono.error(new MyCustomClientException())
-            )
-            .onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                    Mono.error(new MyCustomClientException())
-            )
-            .bodyToMono(BluemixInfoResponse.class)
-            .filter(versionOK)
-            .flatMap(infoResponse -> Mono.just(true))
-            .switchIfEmpty(Mono.just(false));
+        return makeCall(client2, CloudFoundryProviders.BLUEMIX);
     }
 
     public Mono<Boolean> areVersionsOKSequence() {
