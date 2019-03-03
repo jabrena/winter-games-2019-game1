@@ -30,13 +30,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class MyHandler {
 
     private final GlobalConfiguration config;
-    private final WebClient client1;
-    private final WebClient client2;
 
     public MyHandler(GlobalConfiguration config) {
         this.config = config;
-        this.client1 = this.initWebClient(CloudFoundryProviders.PFC);
-        this.client2 = this.initWebClient(CloudFoundryProviders.BLUEMIX);
     }
 
     private Host getHostByProvider(CloudFoundryProviders provider) {
@@ -91,10 +87,14 @@ public class MyHandler {
     }
 
     private Mono<Boolean> getPCFInfo() {
+        WebClient client1 = this.initWebClient(CloudFoundryProviders.PFC);
+
         return makeCall(client1, CloudFoundryProviders.PFC);
     }
 
     private Mono<Boolean> getBluemixInfo() {
+        WebClient client2 = this.initWebClient(CloudFoundryProviders.BLUEMIX);
+
         return makeCall(client2, CloudFoundryProviders.BLUEMIX);
     }
 
