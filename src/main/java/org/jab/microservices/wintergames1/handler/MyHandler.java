@@ -23,14 +23,12 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import java.util.function.Predicate;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 public class MyHandler {
-
-    //TODO Remove this Static Variable
-    private static String PCF_LATEST_VERSION = "2.131.0";
-    private static String BLUEMIX_LATEST_VERSION = "2.106.0";
 
     private final GlobalConfiguration config;
     private final WebClient client1;
@@ -73,6 +71,10 @@ public class MyHandler {
     }
 
     private Mono<Boolean> getPCFInfo() {
+
+        Predicate<PCFInfoResponse> versionOK = (i) ->
+                i.getApiVersion().equals(getHostByProvider(CloudFoundryProviders.PFC).getVersion());
+
         return client1.get()
             .uri("/v2/info")
             .accept(MediaType.APPLICATION_JSON)
@@ -84,12 +86,16 @@ public class MyHandler {
                     Mono.error(new MyCustomClientException())
             )
             .bodyToMono(PCFInfoResponse.class)
-            .filter(MyHandler::isVersionOK)
+            .filter(versionOK)
             .flatMap(infoResponse -> Mono.just(true))
             .switchIfEmpty(Mono.just(false));
     }
 
     private Mono<Boolean> getBluemixInfo() {
+
+        Predicate<BluemixInfoResponse> versionOK = (i) ->
+                i.getApiVersion().equals(getHostByProvider(CloudFoundryProviders.BLUEMIX).getVersion());
+
         return client2.get()
             .uri("/v2/info")
             .accept(MediaType.APPLICATION_JSON)
@@ -101,19 +107,9 @@ public class MyHandler {
                     Mono.error(new MyCustomClientException())
             )
             .bodyToMono(BluemixInfoResponse.class)
-            .filter(MyHandler::isVersionOK2)
+            .filter(versionOK)
             .flatMap(infoResponse -> Mono.just(true))
             .switchIfEmpty(Mono.just(false));
-    }
-
-    private static boolean isVersionOK(PCFInfoResponse infoResponse) {
-        LOGGER.info("{} {}", PCF_LATEST_VERSION , infoResponse.getApiVersion());
-        return infoResponse.getApiVersion().equals(PCF_LATEST_VERSION);
-    }
-
-    private static boolean isVersionOK2(BluemixInfoResponse infoResponse) {
-        LOGGER.info("{} {}", BLUEMIX_LATEST_VERSION, infoResponse.getApiVersion());
-        return infoResponse.getApiVersion().equals(BLUEMIX_LATEST_VERSION);
     }
 
     public Mono<Boolean> areVersionsOKSequence() {
