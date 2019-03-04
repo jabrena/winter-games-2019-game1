@@ -65,13 +65,14 @@ public class MyHandler {
                 .build();
     }
 
-    private Mono<Boolean> makeCall(WebClient client, CloudFoundryProviders providers) {
+    private Mono<Boolean> makeCall(CloudFoundryProviders provider) {
 
-        final Host host = getHostByProvider(providers);
+        final Host host = getHostByProvider(provider);
         final Predicate<CloudFoundryInfoResponse> versionOK =
                 (response) -> response.getApiVersion().equals(host.getVersion());
 
-        return client.get()
+        return this.initWebClient(provider)
+                .get()
                 .uri(host.getResource())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -88,15 +89,11 @@ public class MyHandler {
     }
 
     private Mono<Boolean> getPCFInfo() {
-        WebClient client1 = this.initWebClient(CloudFoundryProviders.PFC);
-
-        return makeCall(client1, CloudFoundryProviders.PFC);
+        return makeCall(CloudFoundryProviders.PFC);
     }
 
     private Mono<Boolean> getBluemixInfo() {
-        WebClient client2 = this.initWebClient(CloudFoundryProviders.BLUEMIX);
-
-        return makeCall(client2, CloudFoundryProviders.BLUEMIX);
+        return makeCall(CloudFoundryProviders.BLUEMIX);
     }
 
     public Mono<Boolean> areVersionsOKSequence() {
