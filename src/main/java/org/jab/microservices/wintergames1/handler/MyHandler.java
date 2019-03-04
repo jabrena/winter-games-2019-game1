@@ -67,11 +67,12 @@ public class MyHandler {
 
     private Mono<Boolean> makeCall(WebClient client, CloudFoundryProviders providers) {
 
-        Predicate<CloudFoundryInfoResponse> versionOK = (response) ->
-                response.getApiVersion().equals(getHostByProvider(providers).getVersion());
+        final Host host = getHostByProvider(providers);
+        final Predicate<CloudFoundryInfoResponse> versionOK =
+                (response) -> response.getApiVersion().equals(host.getVersion());
 
         return client.get()
-                .uri("/v2/info")
+                .uri(host.getResource())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .onStatus(HttpStatus::is4xxClientError, clientResponse ->

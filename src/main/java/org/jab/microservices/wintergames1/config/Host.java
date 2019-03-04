@@ -11,4 +11,5 @@ public class Host {
     private Integer readtimeout;
     private Integer writetimeout;
     private String  version;
+    private String  resource;
 }

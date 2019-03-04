@@ -36,11 +36,9 @@ public class IntegrationTest {
         stubFor(get(urlEqualTo("/v2/info"))
                 .willReturn(okJson(pcfRespponse)));
 
-        //TODO How to load this Stub in another Port?
-        //final String bluemixResponse = getResourceAsString("bluemix_info_response.json");
-        //stubFor(get(urlEqualTo("/v2/info"))
-        //        .willReturn(okJson(bluemixResponse)));
-
+        final String bluemixResponse = getResourceAsString("bluemix_info_response.json");
+        stubFor(get(urlEqualTo("/v2/infob"))
+                .willReturn(okJson(bluemixResponse)));
     }
 
     @Test
@@ -52,7 +50,7 @@ public class IntegrationTest {
                 .expectStatus()
                 .isOk()
                 .expectBody(MyResponse.class)
-                .isEqualTo(new MyResponse(false));
+                .isEqualTo(new MyResponse(true));
     }
 
 
@@ -65,10 +63,25 @@ public class IntegrationTest {
                 .expectStatus()
                 .isOk()
                 .expectBody(MyResponse.class)
-                .isEqualTo(new MyResponse(false));
+                .isEqualTo(new MyResponse(true));
+    }
+
+    @Test
+    public void exampleTestNoOK() throws Exception {
+        testClient.get()
+                .uri("/api/versionKKK")
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .jsonPath("timestamp").isNotEmpty()
+                .jsonPath("path").isEqualTo("/api/versionKKK")
+                .jsonPath("error").isEqualTo("Not Found")
+                .jsonPath("message").isEqualTo("No matching handler");
     }
 
     public static String getResourceAsString(final String pathToFile) throws IOException {
         return copyToString(new ClassPathResource(pathToFile).getInputStream(), defaultCharset());
     }
+
 }

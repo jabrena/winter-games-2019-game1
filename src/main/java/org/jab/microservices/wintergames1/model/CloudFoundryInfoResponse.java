@@ -2,9 +2,16 @@ package org.jab.microservices.wintergames1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Objects;
 
+/**
+ * This POJO is used to process the JSON from PCF & Bluemix
+ */
+@EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CloudFoundryInfoResponse {
 
@@ -21,16 +28,4 @@ public class CloudFoundryInfoResponse {
         this.apiVersion = apiVersion;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CloudFoundryInfoResponse that = (CloudFoundryInfoResponse) o;
-        return Objects.equals(apiVersion, that.apiVersion);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(apiVersion);
-    }
 }
