@@ -1,5 +1,7 @@
 # winter-games-2019-game1
 
+[![Build Status](https://travis-ci.org/jabrena/winter-games-2019-game1.svg?branch=master)](https://travis-ci.org/jabrena/winter-games-2019-game1)
+
 Implementation of first challenge
 
 ```
