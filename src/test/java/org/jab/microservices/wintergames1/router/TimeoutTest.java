@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.nio.charset.Charset.defaultCharset;
@@ -44,8 +45,14 @@ public class TimeoutTest {
     @Test
     public void Given_a_request_When_any_provider_generate_timeout_Then_return_false() {
 
-        testClient.get()
-                .uri("/api/version")
+
+        WebTestClient client = testClient
+            .mutate()
+            .responseTimeout(Duration.ofMillis(30000))
+            .build();
+
+        client.get()
+                .uri("/api/version/sequence")
                 .exchange()
                 .expectStatus()
                 .isOk()

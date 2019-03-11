@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import java.time.Duration;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -50,16 +51,8 @@ public class MyHandler {
         LOGGER.info("Configuring id: {} with address: {}", host.getId(), host.getAddress());
         LOGGER.info("Connection timeout: {}, Read timeout: {}, Write timeout: {}", host.getConntimeout(), host.getReadtimeout(), host.getWritetimeout());
 
-        final TcpClient tcpClient = TcpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, host.getConntimeout())
-                .noProxy()
-                .doOnConnected(connection -> connection
-                        .addHandlerLast(new ReadTimeoutHandler(host.getReadtimeout()))
-                        .addHandlerLast(new WriteTimeoutHandler(host.getWritetimeout())));
-
         return WebClient
                 .builder()
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .baseUrl(host.getAddress())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .filter(logRequest())
@@ -73,51 +66,19 @@ public class MyHandler {
                 (response) -> response.getApiVersion().equals(host.getVersion());
 
         CloudFoundryInfoResponse fallback = CloudFoundryInfoResponse.builder().apiVersion("BAD").build();
-
-        //try {
             return this.initWebClient(provider)
                     .get()
                     .uri(host.getResource())
                     .accept(MediaType.APPLICATION_JSON)
                     .retrieve()
-                    //.onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                    //        Mono.error(new MyCustomClientException())
-                    //)
-                    //.onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                    //        Mono.error(new MyCustomClientException())
-                    //)
                     .bodyToMono(CloudFoundryInfoResponse.class)
-                    //.doOnError(x -> {
-                    //    CloudFoundryInfoResponse.builder().apiVersion("BAD").build();
-                    //})
-                    //.onErrorReturn(Mono.just(false))
-                    //.onErrorReturn(fallback)
-                    //.onErrorResume(
-                    //        (Function<? super Throwable, ? extends Mono<? extends CloudFoundryInfoResponse>>) fallback
-                    //)
-                    .doOnSuccess(response -> {
-                        LOGGER.info("Success");
-                    })
-
-                    .doOnError(
-                            throwable -> {
-                                throw new RuntimeException("error demo");
-                                //Mono.just(false);
-                            }
-                    )
-                    //.onErrorResume(response -> {
-                    //    return Mono.just(fallback);
-                    //})
+                    .timeout(Duration.ofMillis(host.getConntimeout()))
+                    .onErrorReturn(fallback)
+                    //.onErrorMap(throwable -> new RuntimeException("my exception"))
                     .log()
                     .filter(versionOK)
                     .flatMap(infoResponse -> Mono.just(true))
                     .switchIfEmpty(Mono.just(false));
-                    //.onErrorReturn(false);
-        //TODO how to handle this error
-        //} catch (RuntimeException e) {
-        //    LOGGER.error("{}", e.getMessage(), e);
-        //    return Mono.just(true);
-        //}
     }
 
     private Mono<Boolean> getPCFInfo() {
@@ -133,12 +94,8 @@ public class MyHandler {
         final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo();
 
         return isPCFVersionOK
-                .flatMap(versionIsOK -> {
-                    return isBlueMixVersionOK
-                            .flatMap(versionIsOK2 -> {
-                                return Mono.just(versionIsOK && versionIsOK2);
-                            });
-                });
+                .flatMap(versionIsOK -> isBlueMixVersionOK
+                        .flatMap(versionIsOK2 -> Mono.just(versionIsOK && versionIsOK2)));
     }
 
     public Mono<Boolean> areVersionsOKParallel(){
