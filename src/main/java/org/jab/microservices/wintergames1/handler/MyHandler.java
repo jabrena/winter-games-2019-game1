@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -71,21 +72,52 @@ public class MyHandler {
         final Predicate<CloudFoundryInfoResponse> versionOK =
                 (response) -> response.getApiVersion().equals(host.getVersion());
 
-        return this.initWebClient(provider)
-                .get()
-                .uri(host.getResource())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                        Mono.error(new MyCustomClientException())
-                )
-                .onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                        Mono.error(new MyCustomClientException())
-                )
-                .bodyToMono(CloudFoundryInfoResponse.class)
-                .filter(versionOK)
-                .flatMap(infoResponse -> Mono.just(true))
-                .switchIfEmpty(Mono.just(false));
+        CloudFoundryInfoResponse fallback = CloudFoundryInfoResponse.builder().apiVersion("BAD").build();
+
+        //try {
+            return this.initWebClient(provider)
+                    .get()
+                    .uri(host.getResource())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    //.onStatus(HttpStatus::is4xxClientError, clientResponse ->
+                    //        Mono.error(new MyCustomClientException())
+                    //)
+                    //.onStatus(HttpStatus::is5xxServerError, clientResponse ->
+                    //        Mono.error(new MyCustomClientException())
+                    //)
+                    .bodyToMono(CloudFoundryInfoResponse.class)
+                    //.doOnError(x -> {
+                    //    CloudFoundryInfoResponse.builder().apiVersion("BAD").build();
+                    //})
+                    //.onErrorReturn(Mono.just(false))
+                    //.onErrorReturn(fallback)
+                    //.onErrorResume(
+                    //        (Function<? super Throwable, ? extends Mono<? extends CloudFoundryInfoResponse>>) fallback
+                    //)
+                    .doOnSuccess(response -> {
+                        LOGGER.info("Success");
+                    })
+
+                    .doOnError(
+                            throwable -> {
+                                throw new RuntimeException("error demo");
+                                //Mono.just(false);
+                            }
+                    )
+                    //.onErrorResume(response -> {
+                    //    return Mono.just(fallback);
+                    //})
+                    .log()
+                    .filter(versionOK)
+                    .flatMap(infoResponse -> Mono.just(true))
+                    .switchIfEmpty(Mono.just(false));
+                    //.onErrorReturn(false);
+        //TODO how to handle this error
+        //} catch (RuntimeException e) {
+        //    LOGGER.error("{}", e.getMessage(), e);
+        //    return Mono.just(true);
+        //}
     }
 
     private Mono<Boolean> getPCFInfo() {
