@@ -13,5 +13,10 @@ public class WinterGames1Tests {
 	public void contextLoads() {
 	}
 
+	@Test
+	public void applicationStarts() {
+		WinterGames1.main(new String[] {});
+	}
+
 }
 

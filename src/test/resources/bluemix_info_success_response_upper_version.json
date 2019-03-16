@@ -1,0 +1,17 @@
+{
+   "name":"IBM Cloud",
+   "build":"1.19",
+   "support":"http://ibm.biz/bluemix-supportinfo",
+   "version":0,
+   "description":"IBM Bluemix",
+   "authorization_endpoint":"https://login.ng.bluemix.net/UAALoginServerWAR",
+   "token_endpoint":"https://uaa.ng.bluemix.net",
+   "min_cli_version":null,
+   "min_recommended_cli_version":null,
+   "api_version":"2.107.0",
+   "app_ssh_endpoint":"ssh.ng.bluemix.net:2222",
+   "app_ssh_host_key_fingerprint":"c7:1f:89:2a:62:3b:78:a9:08:c9:33:81:fb:39:26:da",
+   "app_ssh_oauth_client":"ssh-proxy",
+   "doppler_logging_endpoint":"wss://doppler.ng.bluemix.net:443",
+   "bits_endpoint":"https://bits-service.ng.bluemix.net"
+}

@@ -1,6 +1,5 @@
 package org.jab.microservices.wintergames1.handler;
 
-import org.jab.microservices.wintergames1.model.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;

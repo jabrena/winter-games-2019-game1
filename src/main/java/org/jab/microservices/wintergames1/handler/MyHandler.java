@@ -1,117 +1,34 @@
 package org.jab.microservices.wintergames1.handler;
 
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jab.microservices.wintergames1.config.CloudFoundryProviders;
-import org.jab.microservices.wintergames1.config.GlobalConfiguration;
-import org.jab.microservices.wintergames1.config.Host;
-import org.jab.microservices.wintergames1.model.CloudFoundryInfoResponse;
-import org.jab.microservices.wintergames1.model.MyCustomClientException;
-import org.jab.microservices.wintergames1.model.MyResponse;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.jab.microservices.wintergames1.service.BluemixInfoAdapter;
+import org.jab.microservices.wintergames1.service.PCFInfoAdapter;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
-
-import java.util.function.Predicate;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
+@AllArgsConstructor
 public class MyHandler {
 
-    private final GlobalConfiguration config;
-
-    public MyHandler(GlobalConfiguration config) {
-        this.config = config;
-    }
-
-    private Host getHostByProvider(CloudFoundryProviders provider) {
-        return config.getHosts().stream()
-                .filter(x -> x.getId().equals(provider))
-                .findFirst()
-                .get();
-    }
-
-    private WebClient initWebClient(CloudFoundryProviders provider) {
-
-        final Host host = this.getHostByProvider(provider);
-
-        LOGGER.info("Configuring id: {} with address: {}", host.getId(), host.getAddress());
-        LOGGER.info("Connection timeout: {}, Read timeout: {}, Write timeout: {}", host.getConntimeout(), host.getReadtimeout(), host.getWritetimeout());
-
-        final TcpClient tcpClient = TcpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, host.getConntimeout())
-                .noProxy()
-                .doOnConnected(connection -> connection
-                        .addHandlerLast(new ReadTimeoutHandler(host.getReadtimeout()))
-                        .addHandlerLast(new WriteTimeoutHandler(host.getWritetimeout())));
-
-        return WebClient
-                .builder()
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
-                .baseUrl(host.getAddress())
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .filter(logRequest())
-                .build();
-    }
-
-    private Mono<Boolean> makeCall(CloudFoundryProviders provider) {
-
-        final Host host = getHostByProvider(provider);
-        final Predicate<CloudFoundryInfoResponse> versionOK =
-                (response) -> response.getApiVersion().equals(host.getVersion());
-
-        return this.initWebClient(provider)
-                .get()
-                .uri(host.getResource())
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .onStatus(HttpStatus::is4xxClientError, clientResponse ->
-                        Mono.error(new MyCustomClientException())
-                )
-                .onStatus(HttpStatus::is5xxServerError, clientResponse ->
-                        Mono.error(new MyCustomClientException())
-                )
-                .bodyToMono(CloudFoundryInfoResponse.class)
-                .filter(versionOK)
-                .flatMap(infoResponse -> Mono.just(true))
-                .switchIfEmpty(Mono.just(false));
-    }
-
-    private Mono<Boolean> getPCFInfo() {
-        return makeCall(CloudFoundryProviders.PFC);
-    }
-
-    private Mono<Boolean> getBluemixInfo() {
-        return makeCall(CloudFoundryProviders.BLUEMIX);
-    }
+    private final PCFInfoAdapter pcfInfoAdapter;
+    private final BluemixInfoAdapter bluemixInfoAdapter;
 
     public Mono<Boolean> areVersionsOKSequence() {
-        final Mono<Boolean> isPCFVersionOK = getPCFInfo();
-        final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo();
+        final Mono<Boolean> isPCFVersionOK = pcfInfoAdapter.getVersion();
+        final Mono<Boolean> isBlueMixVersionOK = bluemixInfoAdapter.getVersion();
 
         return isPCFVersionOK
-                .flatMap(versionIsOK -> {
-                    return isBlueMixVersionOK
-                            .flatMap(versionIsOK2 -> {
-                                return Mono.just(versionIsOK && versionIsOK2);
-                            });
-                });
+                .flatMap(versionIsOK -> isBlueMixVersionOK
+                        .flatMap(versionIsOK2 -> Mono.just(versionIsOK && versionIsOK2)));
     }
 
     public Mono<Boolean> areVersionsOKParallel(){
-        final Mono<Boolean> isPCFVersionOK = getPCFInfo();
-        final Mono<Boolean> isBlueMixVersionOK = getBluemixInfo();
+        final Mono<Boolean> isPCFVersionOK = pcfInfoAdapter.getVersion();
+        final Mono<Boolean> isBlueMixVersionOK = bluemixInfoAdapter.getVersion();
 
         //TODO Simplify this syntax
         return isPCFVersionOK.mergeWith(isBlueMixVersionOK)
@@ -138,14 +55,6 @@ public class MyHandler {
                     .ok()
                     .contentType(APPLICATION_JSON)
                     .body(Mono.just(new MyResponse(areOK)), MyResponse.class);
-        });
-    }
-
-    private static ExchangeFilterFunction logRequest() {
-        return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            LOGGER.info("Request: {} {}", clientRequest.method(), clientRequest.url());
-            clientRequest.headers().forEach((name, values) -> values.forEach(value -> LOGGER.info("{}={}", name, value)));
-            return Mono.just(clientRequest);
         });
     }
 

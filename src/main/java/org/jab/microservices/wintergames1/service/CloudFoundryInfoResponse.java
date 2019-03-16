@@ -1,17 +1,19 @@
-package org.jab.microservices.wintergames1.model;
+package org.jab.microservices.wintergames1.service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
-import java.util.Objects;
+import lombok.NoArgsConstructor;
 
 /**
  * This POJO is used to process the JSON from PCF & Bluemix
  */
+@Builder
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CloudFoundryInfoResponse {
 
