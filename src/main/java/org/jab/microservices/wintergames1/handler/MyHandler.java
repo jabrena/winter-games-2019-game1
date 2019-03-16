@@ -1,41 +1,30 @@
 package org.jab.microservices.wintergames1.handler;
 
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jab.microservices.wintergames1.config.CloudFoundryProviders;
 import org.jab.microservices.wintergames1.config.GlobalConfiguration;
 import org.jab.microservices.wintergames1.config.Host;
 import org.jab.microservices.wintergames1.model.CloudFoundryInfoResponse;
-import org.jab.microservices.wintergames1.model.MyCustomClientException;
 import org.jab.microservices.wintergames1.model.MyResponse;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 
 import java.time.Duration;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
+@AllArgsConstructor
 public class MyHandler {
 
     private final GlobalConfiguration config;
-
-    public MyHandler(GlobalConfiguration config) {
-        this.config = config;
-    }
 
     private Host getHostByProvider(CloudFoundryProviders provider) {
         return config.getHosts().stream()
@@ -62,6 +51,7 @@ public class MyHandler {
     private Mono<Boolean> makeCall(CloudFoundryProviders provider) {
 
         final Host host = getHostByProvider(provider);
+
         final Predicate<CloudFoundryInfoResponse> versionOK =
                 (response) -> response.getApiVersion().equals(host.getVersion());
 

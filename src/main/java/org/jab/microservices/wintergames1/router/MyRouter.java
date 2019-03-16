@@ -3,8 +3,6 @@ package org.jab.microservices.wintergames1.router;
 import lombok.extern.slf4j.Slf4j;
 import org.jab.microservices.wintergames1.handler.ErrorHandler;
 import org.jab.microservices.wintergames1.handler.MyHandler;
-import org.jab.microservices.wintergames1.model.MyCustomClientException;
-import org.springframework.web.reactive.function.server.HandlerFilterFunction;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 

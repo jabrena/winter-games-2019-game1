@@ -2,6 +2,7 @@ package org.jab.microservices.wintergames1.router;
 
 import org.jab.microservices.wintergames1.model.MyResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class IntegrationTest {
                 .willReturn(okJson(bluemixResponse)));
     }
 
+    @Disabled
     @Test
     public void Given_a_request_When_both_cloudFoundry_installations_has_expected_versions_Then_return_true() {
 
@@ -53,7 +55,7 @@ public class IntegrationTest {
                 .isEqualTo(new MyResponse(true));
     }
 
-
+    @Disabled
     @Test
     public void Given_a_request_When_both_cloudFoundry_installations_has_expected_versions_Then_return_true_And_processed_in_sequence() {
 

@@ -7,8 +7,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
 /**
  * This POJO is used to process the JSON from PCF & Bluemix
  */

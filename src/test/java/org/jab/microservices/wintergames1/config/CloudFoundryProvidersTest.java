@@ -1,6 +1,7 @@
 package org.jab.microservices.wintergames1.config;
 
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CloudFoundryProvidersTest {
