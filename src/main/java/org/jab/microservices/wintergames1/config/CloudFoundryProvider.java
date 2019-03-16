@@ -1,12 +1,12 @@
 package org.jab.microservices.wintergames1.config;
 
-public enum CloudFoundryProviders {
+public enum CloudFoundryProvider {
     PFC (0),
     BLUEMIX (1);
 
     private int index;
 
-    CloudFoundryProviders(int index) {
+    CloudFoundryProvider(int index) {
         this.index = index;
     }
 

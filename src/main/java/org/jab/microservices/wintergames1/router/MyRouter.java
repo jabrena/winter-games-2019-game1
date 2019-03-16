@@ -18,35 +18,6 @@ public class MyRouter {
 
         return route(GET("/api/version").and(accept(APPLICATION_JSON)), myHandler::getVersionParallel)
                 .andRoute(GET("/api/version/sequence").and(accept(APPLICATION_JSON)), myHandler::getVersionSequence);
-                /*
-                .filter((request, next) -> {
-                    try {
-                        return next.handle(request);
-                    } catch (Exception e) {
-                        LOGGER.error("An error occured", e);
-                        return ServerResponse.notFound().build();
-                    }
-                });
-                */
     }
 
-/*
-    private HandlerFilterFunction<ServerResponse, ServerResponse> dataNotFoundToBadRequest() {
-        return (request, next) -> {
-            try {
-                return next.handle(request);
-            } catch (Exception e) {
-                LOGGER.error("An error occured", e);
-
-                //when (ex) {
-                //    is NotFoundException -> ServerResponse.notFound().build()
-                //else -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR).build()
-                //}
-
-                return ServerResponse.notFound().build();
-            }
-
-        }
-    }
-*/
 }

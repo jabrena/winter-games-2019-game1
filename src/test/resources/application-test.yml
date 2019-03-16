@@ -15,5 +15,5 @@ location:
     address: "http://localhost:8081"
     conntimeout: 1000
     version: "2.106.0"
-    resource: "/v2/infob"
+    resource: "/v2/info"
 

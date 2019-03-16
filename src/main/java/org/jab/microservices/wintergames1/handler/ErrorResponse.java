@@ -1,4 +1,4 @@
-package org.jab.microservices.wintergames1.model;
+package org.jab.microservices.wintergames1.handler;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
