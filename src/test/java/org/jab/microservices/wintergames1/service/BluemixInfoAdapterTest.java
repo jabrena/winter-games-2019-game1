@@ -19,7 +19,7 @@ import static org.springframework.util.StreamUtils.copyToString;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWireMock(port = 8081)
+@AutoConfigureWireMock(port = 8082)
 @ActiveProfiles("test")
 @DirtiesContext
 public class BluemixInfoAdapterTest {

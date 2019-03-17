@@ -12,7 +12,7 @@ location:
     resource: "/v2/info"
   -
     id: "BLUEMIX"
-    address: "http://localhost:8081"
+    address: "http://localhost:8082"
     conntimeout: 2000
     version: "2.106.0"
     resource: "/v2/info"
