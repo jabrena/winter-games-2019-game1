@@ -1,5 +1,6 @@
 package org.jab.microservices.wintergames1.service;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ public class PCFInfoAdapterTest {
                 .verify();
     }
 
+    @Disabled
     @Test
     public void Given_a_request_When_call_PCF_Then_return_false_if_timeout() throws Exception {
 
