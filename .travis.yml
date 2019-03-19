@@ -14,3 +14,7 @@ script:
 - ./mvnw -Dtest=BluemixInfoAdapterTest,PCFInfoAdapterTest test
 after_success:
 - bash <(curl -s https://codecov.io/bash)
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
