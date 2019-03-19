@@ -19,7 +19,7 @@ import static java.nio.charset.Charset.defaultCharset;
 import static org.springframework.util.StreamUtils.copyToString;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @AutoConfigureWireMock(port = 8082)
 @ActiveProfiles("test")
 @DirtiesContext
@@ -58,7 +58,6 @@ public class BluemixInfoAdapterTest {
                 .verify();
     }
 
-    @Disabled
     @Test
     public void Given_a_request_When_call_bluemix_Then_return_false_if_timeout() throws Exception {
 
