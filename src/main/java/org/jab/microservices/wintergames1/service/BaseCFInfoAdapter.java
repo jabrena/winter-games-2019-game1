@@ -66,7 +66,7 @@ public class BaseCFInfoAdapter {
                 .retrieve()
                 .bodyToMono(CloudFoundryInfoResponse.class)
                 .timeout(Duration.ofMillis(host.getConntimeout()))
-                //.onErrorReturn(fallback)
+                .onErrorReturn(fallback)
                 //.onErrorMap(throwable -> new RuntimeException("my exception"))
                 .log()
                 .filter(versionOK)
