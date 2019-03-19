@@ -11,7 +11,7 @@ notifications:
     recipients:
     - bren@juanantonio.info
 script:
-- ./mvnw -Dtest=PCFInfoAdapterTest test
+- ./mvnw test
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 cache:
