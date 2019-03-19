@@ -64,7 +64,7 @@ public class PCFInfoAdapterTest {
 
         final String response = getResourceAsString("bluemix_info_success_response.json");
         stubFor(get(urlEqualTo("/v2/info"))
-                .willReturn(okJson(response).withFixedDelay(15000)));
+                .willReturn(okJson(response).withFixedDelay(25000)));
 
         StepVerifier.create(pcfInfoAdapter.getVersion())
                 .expectNext(false)
