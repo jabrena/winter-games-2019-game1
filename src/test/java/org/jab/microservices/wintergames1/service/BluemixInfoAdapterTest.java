@@ -1,6 +1,6 @@
 package org.jab.microservices.wintergames1.service;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,6 @@ public class BluemixInfoAdapterTest {
                 .verify();
     }
 
-    @Disabled
     @Test
     public void Given_a_request_When_call_bluemix_Then_return_false_if_version_is_not_expected() throws Exception {
 
@@ -64,12 +63,17 @@ public class BluemixInfoAdapterTest {
 
         final String response = getResourceAsString("bluemix_info_success_response.json");
         stubFor(get(urlEqualTo("/v2/info"))
-                .willReturn(okJson(response).withFixedDelay(25000)));
+                .willReturn(okJson(response).withFixedDelay(5000)));
 
         StepVerifier.create(bluemixInfoAdapter.getVersion())
                 .expectNext(false)
                 .expectComplete()
                 .verify();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        reset();
     }
 
 }
