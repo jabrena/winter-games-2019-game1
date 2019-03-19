@@ -45,6 +45,7 @@ public class BluemixInfoAdapterTest {
                 .verify();
     }
 
+    @Disabled
     @Test
     public void Given_a_request_When_call_bluemix_Then_return_false_if_version_is_not_expected() throws Exception {
 
@@ -58,6 +59,7 @@ public class BluemixInfoAdapterTest {
                 .verify();
     }
 
+    @Disabled
     @Test
     public void Given_a_request_When_call_bluemix_Then_return_false_if_timeout() throws Exception {
 
