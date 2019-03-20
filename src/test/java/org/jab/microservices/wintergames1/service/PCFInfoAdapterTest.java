@@ -1,5 +1,7 @@
 package org.jab.microservices.wintergames1.service;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +20,14 @@ import static java.nio.charset.Charset.defaultCharset;
 import static org.springframework.util.StreamUtils.copyToString;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 @AutoConfigureWireMock(port = 8081)
 @ActiveProfiles("test")
 @DirtiesContext
 public class PCFInfoAdapterTest {
+
+    @Autowired
+    protected WireMockServer wireMockServer;
 
     @Autowired
     private PCFInfoAdapter pcfInfoAdapter;
@@ -35,7 +40,7 @@ public class PCFInfoAdapterTest {
     public void Given_a_request_When_call_PCF_Then_return_true_if_expected_version() throws Exception {
 
         final String response = getResourceAsString("pcf_info_success_response.json");
-        stubFor(get(urlEqualTo("/v2/info"))
+        wireMockServer.stubFor(get(urlEqualTo("/v2/info"))
                 .willReturn(okJson(response)));
 
         StepVerifier.create(pcfInfoAdapter.getVersion())
@@ -48,7 +53,7 @@ public class PCFInfoAdapterTest {
     public void Given_a_request_When_call_PCF_Then_return_false_if_version_is_not_expected() throws Exception {
 
         final String response = getResourceAsString("pcf_info_success_response_upper_version.json");
-        stubFor(get(urlEqualTo("/v2/info"))
+        wireMockServer.stubFor(get(urlEqualTo("/v2/info"))
                 .willReturn(okJson(response)));
 
         StepVerifier.create(pcfInfoAdapter.getVersion())
@@ -61,13 +66,18 @@ public class PCFInfoAdapterTest {
     public void Given_a_request_When_call_PCF_Then_return_false_if_timeout() throws Exception {
 
         final String response = getResourceAsString("bluemix_info_success_response.json");
-        stubFor(get(urlEqualTo("/v2/info"))
+        wireMockServer.stubFor(get(urlEqualTo("/v2/info"))
                 .willReturn(okJson(response).withFixedDelay(5000)));
 
         StepVerifier.create(pcfInfoAdapter.getVersion())
                 .expectNext(false)
                 .expectComplete()
                 .verify();
+    }
+
+    @BeforeEach
+    public void tearDown() {
+        wireMockServer.resetAll();
     }
 
 }
