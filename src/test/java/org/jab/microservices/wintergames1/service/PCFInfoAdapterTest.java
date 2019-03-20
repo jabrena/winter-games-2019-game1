@@ -1,6 +1,6 @@
 package org.jab.microservices.wintergames1.service;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +72,7 @@ public class PCFInfoAdapterTest {
                 .verify();
     }
 
-    @BeforeEach
+    @Before
     public void tearDown() {
         resetAll();
     }
