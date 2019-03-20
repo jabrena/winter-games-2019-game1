@@ -1,6 +1,5 @@
 package org.jab.microservices.wintergames1.service;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +15,7 @@ import reactor.test.StepVerifier;
 import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.sun.webkit.perf.PerfLogger.resetAll;
 import static java.nio.charset.Charset.defaultCharset;
 import static org.springframework.util.StreamUtils.copyToString;
 
@@ -74,7 +74,7 @@ public class BluemixInfoAdapterTest {
 
     @BeforeEach
     public void tearDown() {
-        reset();
+        resetAll();
     }
 
 }
