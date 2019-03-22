@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
@@ -17,45 +19,69 @@ public class MyHandler {
     private final PCFInfoAdapter pcfInfoAdapter;
     private final BluemixInfoAdapter bluemixInfoAdapter;
 
-    public Mono<Boolean> areVersionsOKSequence() {
-        final Mono<Boolean> isPCFVersionOK = pcfInfoAdapter.getVersion();
-        final Mono<Boolean> isBlueMixVersionOK = bluemixInfoAdapter.getVersion();
+    public Mono<Boolean> isPCFVersionOK(Mono<Object> voidMono){
+        return pcfInfoAdapter.getVersion();
+    }
 
-        return isPCFVersionOK
-                .flatMap(versionIsOK -> isBlueMixVersionOK
-                        .flatMap(versionIsOK2 -> Mono.just(versionIsOK && versionIsOK2)));
+    public Mono<Boolean> andBlueMixVersionIsOK(Mono<Boolean> isPCFVersionOKMono){
+        return bluemixInfoAdapter
+            .getVersion()
+            .flatMap(booleanMono -> isPCFVersionOKMono.flatMap(aBoolean -> Mono.just(booleanMono && aBoolean)));
+    }
+
+    public Mono<Boolean> areVersionsOKSequence() {
+        return Mono.empty()
+            .transform(this::isPCFVersionOK)
+            .transform(this::andBlueMixVersionIsOK);
+    }
+
+    private boolean onlyTrue(Boolean aBoolean){
+        return aBoolean == true;
+    }
+
+    private boolean weHaveTwoElements(List<Boolean> elements){
+        return elements.size() == 2;
     }
 
     public Mono<Boolean> areVersionsOKParallel(){
-        final Mono<Boolean> isPCFVersionOK = pcfInfoAdapter.getVersion();
-        final Mono<Boolean> isBlueMixVersionOK = bluemixInfoAdapter.getVersion();
+        return pcfInfoAdapter.getVersion()
+            .mergeWith(bluemixInfoAdapter.getVersion())
+            .filter(this::onlyTrue)
+            .collectList()
+            .map(this::weHaveTwoElements);
+    }
 
-        //TODO Simplify this syntax
-        return isPCFVersionOK.mergeWith(isBlueMixVersionOK)
-            .filter(aBoolean -> {
-                return aBoolean;
-            })
-            .collectList().map(booleans -> {
-                return booleans.size() == 2;
-        });
+    private Mono<MyResponse> toResponse(Mono<Boolean> areOKMono) {
+        return areOKMono.flatMap(aBoolean -> Mono.just(new MyResponse(aBoolean)));
+    }
+
+    private Mono<ServerResponse> toServerResponse(Mono<MyResponse> responseMono) {
+        return responseMono.transform(response -> ServerResponse
+            .ok()
+            .contentType(APPLICATION_JSON)
+            .body(responseMono, MyResponse.class));
+    }
+
+    private Mono<ServerResponse> process(Mono<Boolean> booleanMono){
+        return booleanMono
+            .transform(this::toResponse)
+            .transform(this::toServerResponse);
     }
 
     public Mono<ServerResponse> getVersionParallel(ServerRequest serverRequest) {
-        return areVersionsOKParallel().flatMap(areOK -> {
-            return ServerResponse
-                    .ok()
-                    .contentType(APPLICATION_JSON)
-                    .body(Mono.just(new MyResponse(areOK)), MyResponse.class);
-        });
+        return pcfInfoAdapter.getVersion()
+            .mergeWith(bluemixInfoAdapter.getVersion())
+            .filter(this::onlyTrue)
+            .collectList()
+            .map(this::weHaveTwoElements)
+            .transform(this::process);
     }
 
     public Mono<ServerResponse> getVersionSequence(ServerRequest serverRequest) {
-        return areVersionsOKSequence().flatMap(areOK -> {
-            return ServerResponse
-                    .ok()
-                    .contentType(APPLICATION_JSON)
-                    .body(Mono.just(new MyResponse(areOK)), MyResponse.class);
-        });
+        return Mono.empty()
+            .transform(this::isPCFVersionOK)
+            .transform(this::andBlueMixVersionIsOK)
+            .transform(this::process);
     }
 
 }
